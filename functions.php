@@ -78,6 +78,8 @@ if ( ! function_exists( 'houstonapps_setup' ) ):
             'aside', 'image', 'video', 'quote', 'link'
         ) );
 
+        add_theme_support( 'post-thumbnails' );
+
         /**
          * This theme uses wp_nav_menu() in one location.
          */
@@ -89,6 +91,10 @@ endif; // houstonapps_setup
 add_action( 'after_setup_theme', 'houstonapps_setup' );
 
 
+
+
+
+
 /**
  * Register widget area.
  *
@@ -96,36 +102,27 @@ add_action( 'after_setup_theme', 'houstonapps_setup' );
  */
 function houstonapps_widgets_init() {
     register_sidebar( array(
-        'name'          => __( 'Sliding sidebar', 'houstonapps' ),
+        'name'          => __( 'Home top', 'houstonapps' ),
         'id'            => 'sidebar-1',
         'description'   => '',
-        'before_widget' => '<header id="%1$s" class="large-12 columns %2$s">',
+        'before_widget' => '<header class="large-12 columns">',
         'after_widget'  => '</header>',
-        'before_title'  => '<h2 class="widget-title">',
+        'before_title'  => '<h2>',
         'after_title'   => '</h2>',
     ) );
 
-    //Register the front page widgets
-    /*if ( function_exists('siteorigin_panels_activate') ) {
-        register_widget( 'Moesia_Services' );
-        register_widget( 'Moesia_Employees' );
-        register_widget( 'Moesia_Fp_Social_Profile' );
-        register_widget( 'Moesia_Blockquote' );
-        register_widget( 'Moesia_Skills' );
-        register_widget( 'Moesia_Facts' );
-        register_widget( 'Moesia_Testimonials' );
-        register_widget( 'Moesia_Clients' );
-        register_widget( 'Moesia_Projects' );
-        register_widget( 'Moesia_Action' );
-        register_widget( 'Moesia_Latest_News' );
-    }*/
 
-    //Register the sidebar widgets
-   /* register_widget( 'Moesia_Recent_Comments' );
-    register_widget( 'Moesia_Recent_Posts' );
-    register_widget( 'Moesia_Social_Profile' );
-    register_widget( 'Moesia_Video_Widget' );
-    register_widget( 'Moesia_Contact_Info' );*/
+    register_sidebar( array(
+        'name'          => __( 'Home main', 'houstonapps' ),
+        'id'            => 'sidebar-2',
+        'description'   => '',
+        'before_widget' => '<main class="large-12 columns">',
+        'after_widget'  => '</main>',
+        'before_title'  => '<h2>',
+        'after_title'   => '</h2>',
+    ) );
+
+
 }
 add_action( 'widgets_init', 'houstonapps_widgets_init' );
 

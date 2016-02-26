@@ -38,5 +38,20 @@ get_header();
         <button data-hnd-toggle="#about_us_page" class="main_btn">Explore</button>
     </header>
 </section>
+
+    <section id="about_us_page" class="about_us_page large-12 columns">
+        <div class="wrapper large-12 columns">
+            <?php if ( is_active_sidebar( 'sidebar-1' )):?>
+                <?php dynamic_sidebar( 'sidebar-1' ); ?>
+            <?php endif;?>
+
+            <?php if ( is_active_sidebar( 'sidebar-2' )):?>
+                <?php dynamic_sidebar( 'sidebar-2' ); ?>
+            <?php endif;?>
+
+        </div>
+
+        <button data-hnd-toggle="#about_us_page" type="button" class="open_btn"></button>
+    </section>
 <?php get_sidebar(); ?>
 <?php get_footer(); ?>
