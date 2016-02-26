@@ -1,37 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Dina
- * Date: 24.02.2016
- * Time: 12:26
+ * Shape functions and definitions
+ *
+ * @package Houstonapps
+ * @since Houstonapps 1.0
  */
-
-
-/**
- * Plugin Name: Enqueue jQuery in Footer
- * Version:     0.0.1
- * Plugin URI:  http://wpgrafie.de/836/
- * Description: Prints jQuery in footer on front-end.
- * Author:      Dominik Schilling
- * Author URI:  http://wpgrafie.de/
- */
-/*
-function ds_enqueue_jquery_in_footer() {
-
-    if ( ! is_admin() ){
-        wp_deregister_script('jquery');
-
-        // Load the copy of jQuery that comes with WordPress
-        // The last parameter set to TRUE states that it should be loaded
-        // in the footer.
-        wp_register_script('jquery', '/wp-includes/js/jquery/jquery.js', FALSE, '', TRUE);
-
-        wp_enqueue_script('jquery');
-    }
-}
-add_action( 'init', 'ds_enqueue_jquery_in_footer' );
-
-*/
 
 /**
  * Customize the title for the home page, if one is not set.
@@ -80,20 +53,25 @@ if ( ! function_exists( 'houstonapps_setup' ) ):
 
         add_theme_support( 'post-thumbnails' );
 
-        /**
-         * This theme uses wp_nav_menu() in one location.
-         */
-        register_nav_menus( array(
-            'primary' => __( 'Primary Menu', 'houstonapps' ),
-        ) );
     }
 endif; // houstonapps_setup
 add_action( 'after_setup_theme', 'houstonapps_setup' );
 
 
-
-
-
+/**
+ * Remove all unneeded styles and scripts
+ * */
+remove_action('wp_head', 'print_emoji_detection_script', 7);
+remove_action('wp_print_styles', 'print_emoji_styles');
+remove_action( 'wp_head', 'feed_links_extra', 3 ); // Display the links to the extra feeds such as category feeds
+remove_action( 'wp_head', 'feed_links', 2 ); // Display the links to the general feeds: Post and Comment Feed
+remove_action( 'wp_head', 'rsd_link' ); // Display the link to the Really Simple Discovery service endpoint, EditURI link
+remove_action( 'wp_head', 'wlwmanifest_link' ); // Display the link to the Windows Live Writer manifest file.
+remove_action( 'wp_head', 'index_rel_link' ); // index link
+remove_action( 'wp_head', 'parent_post_rel_link', 10, 0 ); // prev link
+remove_action( 'wp_head', 'start_post_rel_link', 10, 0 ); // start link
+remove_action( 'wp_head', 'adjacent_posts_rel_link', 10, 0 ); // Display relational links for the posts adjacent to the current post.
+remove_action( 'wp_head', 'wp_generator' ); // Display the XHTML generator that is generated on the wp_head hook, WP version
 
 /**
  * Register widget area.
@@ -105,28 +83,14 @@ function houstonapps_widgets_init() {
         'name'          => __( 'Home top', 'houstonapps' ),
         'id'            => 'sidebar-1',
         'description'   => '',
-        'before_widget' => '<header class="large-12 columns">',
-        'after_widget'  => '</header>',
+        'before_widget' => '',
+        'after_widget'  => '',
         'before_title'  => '<h2>',
         'after_title'   => '</h2>',
     ) );
-
-
-    register_sidebar( array(
-        'name'          => __( 'Home main', 'houstonapps' ),
-        'id'            => 'sidebar-2',
-        'description'   => '',
-        'before_widget' => '<main class="large-12 columns">',
-        'after_widget'  => '</main>',
-        'before_title'  => '<h2>',
-        'after_title'   => '</h2>',
-    ) );
-
 
 }
 add_action( 'widgets_init', 'houstonapps_widgets_init' );
-
-
 
 /**
  * Enqueue scripts and styles.
@@ -141,11 +105,258 @@ function houstonapps_scripts() {
     wp_enqueue_style( 'houstonapps-google-fonts', 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700', false );
     wp_enqueue_style( 'houstonapps-devicon', 'https://cdn.rawgit.com/konpa/devicon/master/devicon.min.css', false );
 
-    wp_enqueue_script( 'houstonapps-foundation-js', get_template_directory_uri() .  '/js/foundation.min.js', array( 'jquery' ), true, true );
-    wp_enqueue_script( 'houstonapps-main-js', get_template_directory_uri() .  '/js/main.js', array('houstonapps-foundation-js' ), true, true );
+
+	if (!is_admin()) {
+		wp_deregister_script('jquery');
+		wp_register_script('jquery', get_template_directory_uri() .'/js/jquery.js',array(),'', true);
+		wp_enqueue_script('jquery');
+	}
+    wp_enqueue_script( 'houstonapps-foundation-js', get_template_directory_uri() .  '/js/foundation.min.js', array( 'jquery' ), '', true );
+    wp_enqueue_script( 'houstonapps-main-js', get_template_directory_uri() .  '/js/main.js', array('houstonapps-foundation-js' ), '', true );
 
 }
 add_action( 'wp_enqueue_scripts', 'houstonapps_scripts' );
+
+
+
+/**
+ * Loop for custom post type Team.
+ */
+function display_team_members(){
+    global $post;
+
+    add_image_size( 'team_widget_size', 630, 630, false );
+    $members = new WP_Query();
+
+    $arr = array(
+        'post_type' => 'team',
+        'posts_per_page' => 7,
+        'order' => 'ASC'
+    );
+    $members->query($arr);
+
+
+    if($members->have_posts()) {?>
+        <div class="large-12 columns members">
+            <h2>Dream Team</h2>
+
+            <ul class="large-12 columns members_list">
+                <?php
+                while ( $members->have_posts() ) : $members->the_post(); ?>
+
+                    <li class="team_member">
+                        <?php
+                        (has_post_thumbnail($post->ID)) ? the_post_thumbnail($post->ID, 'team_widget_size') : '<div class="noThumb"></div>';?>
+                        <div class="member_info">
+                            <div>
+                                <p class="member_name"><?php the_title(); ?></p>
+                                <?php the_content(); ?>
+                            </div>
+                        </div>
+                        <div class="mobile_member_info">
+                            <p class="member_name"><?php the_title(); ?></p>
+                            <?php esc_html(the_content()); ?>
+                        </div>
+                    </li>
+                <?php endwhile; ?>
+            </ul>
+        </div>
+        <?php
+        wp_reset_postdata();
+    }else{
+        echo '<p>No members found</p>';
+    }
+    ?>
+
+<?php
+}
+
+
+/**
+ * Loop for custom post type Working Process.
+ */
+function display_working_process(){
+    global $post;
+
+    $members = new WP_Query();
+
+    $arr = array(
+        'post_type' => 'process',
+        'posts_per_page' => 7,
+        'order' => 'ASC'
+    );
+    $members->query($arr);
+
+
+    if($members->have_posts()) {?>
+        <div class="large-12 columns working_process">
+            <h2>How we work</h2>
+
+
+            <ul class="tabs process_items large-12 columns" data-tab="" role="tablist">
+                 <li class="large-1 columns"></li>
+                 <?php
+                 $i=1;
+                 while ( $members->have_posts() ) {
+                            $members->the_post();
+                            $active = '';
+                            $aria_selected = 'false';
+
+
+                            if($i==1){
+                             $active = 'active';
+                             $aria_selected = 'true';
+                            }
+
+                             $class_icon = get_post_meta($post->ID, "houstonapps_process_icon", true);
+                     ?>
+                              <li class="tab-title large-2 columns <?php echo $active;?>" role="presentation">
+                                <a href="#panel2-<?php echo $i;?>" role="tab" tabindex="0" aria-selected="<?php echo $aria_selected;?>" aria-controls="panel2-<?php echo $i;?>">
+                                    <i class="<?php echo $class_icon;?>"></i>
+                                    <h3><?php the_title(); ?></h3>
+                                </a>
+                            </li>
+                     <?php $i++; ?>
+                 <?php
+                 }
+                 ?>
+                <li class="large-1 columns"></li>
+            </ul>
+
+
+
+            <div class="tabs-content large-12 columns">
+                <?php
+                 $i=1;
+                 while ( $members->have_posts() ) {
+                     $members->the_post();
+                     $active = '';
+                     $aria_hidden = 'true';
+                     if($i==1){
+                        $active = 'active';
+                        $aria_hidden = 'false';
+                    } ?>
+                     <section role="tabpanel" aria-hidden="<?php echo $aria_hidden;?>" class="content large-2 columns <?php echo $active;?>" id="panel2-<?php echo $i;?>">
+                         <?php the_content(); ?>
+                    </section>
+                     <?php $i++; ?>
+                 <?php
+                 }
+                ?>
+            </div>
+        </div>
+
+        <?php
+        wp_reset_postdata();
+    }else{
+        echo '<p>No processes found</p>';
+    }
+
+}
+
+/**
+ * Loop for custom post type Technologies.
+ */
+function display_technologies(){
+    global $post;
+
+
+    $ts = new WP_Query();
+
+    $arr = array(
+        'post_type' => 'technologies',
+        'posts_per_page' => -1,
+        'order_by'=> 'meta_value_num',
+        'meta_key' => 'houstonapps_is_main',
+        'order' => 'ASC'
+    );
+
+    $ts->query($arr);
+
+
+    if($ts->have_posts()) {?>
+        <div class="large-12 columns tech">
+            <h2>We love</h2>
+
+            <ul class="large-12 columns tech_items">
+                <?php
+                while ( $ts->have_posts() ){
+                    $ts->the_post();
+
+                    $cls = 'large-1 columns';
+                    $values = get_post_custom( $post->ID );
+                    $technologies_icon_class = isset( $values['houstonapps_technologies_icon'] ) ? $values['houstonapps_technologies_icon'][0]: '';
+                    $is_main = isset( $values['houstonapps_is_main'] ) ? $values['houstonapps_is_main'][0] : '';
+
+                    if(!empty($is_main) && $is_main=='on') {
+                        $cls = 'large-2 columns main_item';
+                    }
+
+                ?>
+
+                    <li class="<?php echo $cls;?>">
+                        <i class="<?php echo $technologies_icon_class; ?>"></i>
+                        <span><?php the_title(); ?></span>
+                    </li>
+                <?php } ?>
+            </ul>
+        </div>
+        <?php
+        wp_reset_postdata();
+    }else{
+        echo '<p>No technologies found</p>';
+    }
+    ?>
+
+    <?php
+}
+
+
+
+/**
+ * Loop for custom post type Contacts.
+ */
+function display_contacts(){
+    global $post;
+
+
+    $contacts = new WP_Query();
+
+    $arr = array(
+        'post_type' => 'contacts',
+        'posts_per_page' => -1,
+        'order' => 'ASC'
+    );
+    $contacts->query($arr);
+
+
+    if( $contacts->have_posts()) {?>
+        <div class="large-12 columns contact_us">
+            <h2>Contact us</h2>
+
+            <?php
+                while ( $contacts->have_posts() ) {
+                    $contacts->the_post();
+                ?>
+                    <div class="contact_item">
+                        <?php the_content(); ?>
+                    </div>
+
+
+                <?php } ?>
+
+        </div>
+        <?php
+        wp_reset_postdata();
+    }else{
+        echo '<p>No contacts found</p>';
+    }
+    ?>
+
+    <?php
+}
+
+
 
 
 
