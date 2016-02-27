@@ -48,7 +48,7 @@ if ( ! function_exists( 'houstonapps_setup' ) ):
 	     * See http://codex.wordpress.org/Post_Formats
 	     */
         add_theme_support( 'post-formats', array(
-            'aside', 'image', 'video', 'quote', 'link'
+            'aside', 'image', 'video'
         ) );
 
         add_theme_support( 'post-thumbnails' );
@@ -73,6 +73,7 @@ remove_action( 'wp_head', 'start_post_rel_link', 10, 0 ); // start link
 remove_action( 'wp_head', 'adjacent_posts_rel_link', 10, 0 ); // Display relational links for the posts adjacent to the current post.
 remove_action( 'wp_head', 'wp_generator' ); // Display the XHTML generator that is generated on the wp_head hook, WP version
 
+
 /**
  * Register widget area.
  *
@@ -91,6 +92,7 @@ function houstonapps_widgets_init() {
 
 }
 add_action( 'widgets_init', 'houstonapps_widgets_init' );
+
 
 /**
  * Enqueue scripts and styles.
@@ -363,6 +365,7 @@ function display_contacts(){
 /**
  * Include the TGM_Plugin_Activation class 2.5.2.
  */
+
 require_once dirname( __FILE__ ) .'/tgm-plugin/class-tgm-plugin-activation.php';
 
 add_action( 'tgmpa_register', 'houstonapps_register_required_plugins' );
@@ -370,7 +373,7 @@ function houstonapps_register_required_plugins() {
 
     $plugins = array(
         array(
-            'name'               => 'TGM Example Plugin', // The plugin name.
+            'name'               => 'Houstonapps Plugin', // The plugin name.
             'slug'               => 'houstonapps', // The plugin slug (typically the folder name).
             'source'             => get_template_directory() . '/lib/plugins/houstonapps-plugin.zip', // The plugin source.
             'required'           => true, // If false, the plugin is only 'recommended' instead of required.
@@ -381,7 +384,7 @@ function houstonapps_register_required_plugins() {
     );
 
     $config = array(
-        'id'           => 'houstonapps',                 // Unique ID for hashing notices for multiple instances of TGMPA.
+        'id'           => 'houstonapps',           // Unique ID for hashing notices for multiple instances of TGMPA.
         'default_path' => '',                      // Default absolute path to bundled plugins.
         'menu'         => 'tgmpa-install-plugins', // Menu slug.
         'parent_slug'  => 'themes.php',            // Parent menu slug.
@@ -392,7 +395,7 @@ function houstonapps_register_required_plugins() {
         'is_automatic' => false,                   // Automatically activate plugins after installation or not.
         'message'      => '',                      // Message to output right before the plugins table.
 
-        /*
+
         'strings'      => array(
             'page_title'                      => __( 'Install Required Plugins', 'houstonapps' ),
             'menu_title'                      => __( 'Install Plugins', 'houstonapps' ),
@@ -462,13 +465,14 @@ function houstonapps_register_required_plugins() {
             'plugin_activated'                => __( 'Plugin activated successfully.', 'houstonapps' ),
             'activated_successfully'          => __( 'The following plugin was activated successfully:', 'houstonapps' ),
             'plugin_already_active'           => __( 'No action taken. Plugin %1$s was already active.', 'houstonapps' ),  // %1$s = plugin name(s).
-            'plugin_needs_higher_version'     => __( 'Plugin not activated. A higher version of %s is needed for this theme. Please update the plugin.', 'houstonapps' ),  // %1$s = plugin name(s).
+            'plugin_needs_higher_version'     => __( 'Plugin not activated. A higher version of %s is needed for this theme. Please update the plugin.', 'houstonapps' ),
+            // %1$s = plugin name(s).
             'complete'                        => __( 'All plugins installed and activated successfully. %1$s', 'houstonapps' ), // %s = dashboard link.
             'contact_admin'                   => __( 'Please contact the administrator of this site for help.', 'houstonapps' ),
 
             'nag_type'                        => 'updated', // Determines admin notice type - can only be 'updated', 'update-nag' or 'error'.
         ),
-        */
+
     );
 
     tgmpa( $plugins, $config );
